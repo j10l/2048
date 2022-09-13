@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <iomanip>
 #include <ctime>
 #include <cstdlib>
 
@@ -40,9 +41,9 @@ void printUI() {
 ;    for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
             if (board[i][j] == 0) {
-                cout << ".";
+                cout << setw(4) << ".";
             } else {
-                cout << board[i][j];
+                cout << setw(4) << board[i][j];
             }
         }
         cout << "\n";
@@ -67,19 +68,24 @@ void applyMove (int direction) {
         startColumn = 3;
         columnStep = -1;
     }
-    int movePossible = 0;
-    for (int i = startLine; i >= 0 && i < 4; i += lineStep)
-    {
-        for (int j = startColumn; j >= 0 && j < 4; j += columnStep) {
-            int nextI = i + dirLine[direction], nextJ = j + dirColumn[direction];
-            if (canDoMove(i, j, nextI, nextJ)) {
-                board[nextI][nextJ] += board [i][j];
-                board [i][j] = 0;
-                movePossible = 1;
+    int movePossible, canAddPiece = 0;
+    do {
+        movePossible = 0;
+        for (int i = startLine; i >= 0 && i < 4; i += lineStep)
+        {
+            for (int j = startColumn; j >= 0 && j < 4; j += columnStep) {
+                int nextI = i + dirLine[direction], nextJ = j + dirColumn[direction];
+                if (board[i][j] && canDoMove(i, j, nextI, nextJ)) {
+                    board[nextI][nextJ] += board [i][j];
+                    board [i][j] = 0;
+                    movePossible = canAddPiece = 1;
+                }
             }
+            printUI();
         }
-    }
-    if (movePossible) {
+    } while (movePossible);
+    
+    if (canAddPiece) {
         addPiece();
     }
     
